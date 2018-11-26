@@ -1,0 +1,25 @@
+{
+  "name": "cheese",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "postversion": "react-native-version --never-amend && git commit -am \"Bump versions to `node -p \"require('./package.json').version\"`\""
+  },
+  "dependencies": {
+    "react": "16.6.1",
+    "react-native": "0.57.5",
+    "react-native-camera": "1.4.1",
+    "prop-types": "15.6.2"
+  },
+  "devDependencies": {
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.49.2",
+    "react-test-renderer": "16.6.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
