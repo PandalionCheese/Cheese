@@ -25,7 +25,12 @@ adb reverse tcp:8081 tcp:8081 && adb shell input keyevent 82
 
 ## Build the App Package
 
+Ensure that git directory is clean before running next commands with this : `git status`
+
 When ready to build, first ensure you tagged the version of the app with the proper SemVer version, using the npm command `npm version [major|minor|patch]` (pick one of the 3)
+
+`git push origin master` to send all modification to Github
+`git push --tags` to send the newly created tag to github
 
 Then for Android, from the `android` folder, run the following command (npm run start command must be still running in the background):
 `./gradlew assembleRelease -x lintVitalRelease -PCHEESEAPP_RELEASE_STORE_PASSWORD='<store_password>' -PCHEESEAPP_RELEASE_KEY_PASSWORD='<key_password>'`
