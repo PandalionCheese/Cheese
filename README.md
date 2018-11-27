@@ -18,6 +18,11 @@ react-native run-android (--variant=release)
 react-native run-ios --device "devideId"
 ```
 
+Command to run to see React Native debug tools :
+```
+adb reverse tcp:8081 tcp:8081 && adb shell input keyevent 82
+```
+
 ## Build the App Package
 
 When ready to build, first ensure you tagged the version of the app with the proper SemVer version, using the npm command `npm version [major|minor|patch]` (pick one of the 3)
