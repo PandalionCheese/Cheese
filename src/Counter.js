@@ -20,7 +20,7 @@ export default class Counter extends Component {
             counter: this.props.initialValue
         }, () => {
             this.counterInterval = setInterval(() => {
-                    if (this.state.counter >= 0) {
+                    if (this.state.counter > 0) {
                         this.setState((state) => {
                             return {
                                 counter: state.counter - 1
@@ -42,7 +42,7 @@ export default class Counter extends Component {
     render() {
         return (
             <View style={STYLES.container}>
-                {this.state.counter >= 0 &&
+                {this.state.counter > 0 &&
                 <Text style={STYLES.counterText}>{this.state.counter === 0 ? 'Cheese !' : this.state.counter}</Text>
                 }
             </View>
