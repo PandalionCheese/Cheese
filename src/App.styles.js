@@ -67,8 +67,8 @@ export default StyleSheet.create({
         color: '#FFF',
         fontFamily: 'Myriad Pro Bold',
         textShadowColor: 'rgba(240,118,41,0.9)',
-        textShadowOffset: {width: 4, height: 4},
-        textShadowRadius: 16,
+        textShadowOffset: {width: 0, height: 0},
+        textShadowRadius: 20,
         textAlign: 'center'
     },
     questionnairePopupContainer: {
