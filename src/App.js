@@ -100,7 +100,7 @@ export default class App extends Component {
                 </TouchableOpacity>
                 <Animated.View
                     style={{...STYLES.questionnairePopupContainer, top: this.state.questionnairePopupTopPosition}}>
-                    <Text style={STYLES.questionnairePopupText}>{"Un court questionnaire pour améliorer l'appli ? 😀"}</Text>
+                    <Text style={STYLES.questionnairePopupText}>{"Votre avis pour affiner Cheese! 😀"}</Text>
                     <Image style={STYLES.questionnairePopupArrow}
                            source={require('../assets/arrow.png')}
                            resizeMode={'cover'}/>
