@@ -63,7 +63,8 @@ export default StyleSheet.create({
         marginTop: 60
     },
     themeText: {
-        fontSize: 48,
+        fontSize: 44,
+        fontWeight: 'bold',
         color: '#FFF',
         fontFamily: 'Roboto',
         textShadowColor: 'rgba(0,0,0,0.9)',

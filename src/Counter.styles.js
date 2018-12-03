@@ -4,7 +4,8 @@ export default StyleSheet.create({
     container: {
     },
     counterText: {
-        fontSize: 64,
+        fontSize: 70,
+        fontWeight: 'bold',
         color: '#FFF',
         textShadowColor: 'rgba(0,0,0,0.9)',
         textShadowOffset: {width: 0, height: 5},

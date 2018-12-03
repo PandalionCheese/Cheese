@@ -2,29 +2,29 @@
   "permissions": {
     "camera": {
       "title": "Permission d'utiliser la caméra",
-      "message": "L'application souhaite utiliser la caméra de votre appareil, afin de prendre des photos"
+      "message": "L'application souhaite utiliser la caméra de votre appareil pour prendre des photos"
     },
     "storage": {
       "title": "Permission d'enregistrer des images",
-      "message": "L'application souhaite enregistrer des photos dans la Galerie de votre appareil."
+      "message": "L'application souhaite enregistrer des photos dans la galerie de votre appareil."
     }
   },
   "errors": {
     "permissionRefused": {
       "title": "Permissions insuffisantes",
-      "message": "L'application ne peut pas fonctionner sans ces permissions"
+      "message": "L'application ne peut pas fonctionner sans ces permissions."
     },
     "cannotOpenGallery": {
       "title": "Erreur",
-      "message": "Impossible d'ouvrir la Galerie Photos"
+      "message": "Impossible d'ouvrir la galerie photos."
     },
     "cannotOpenQuestionnaire": {
       "title": "Erreur",
-      "message": "Impossible d'ouvrir le questionnaire dans un navigateur"
+      "message": "Impossible d'ouvrir le questionnaire dans un navigateur."
     },
     "cannotSaveToGallery": {
       "title": "Erreur",
-      "message": "Impossible d'enregistrer l'image dans la Galerie Photos"
+      "message": "Impossible d'enregistrer l'image dans la galerie photos."
     }
   }
 }
