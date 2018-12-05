@@ -32,7 +32,7 @@ export default class App extends Component {
         console.disableYellowBox = true;
         this.state = {
             cameraPermission: false,
-            cameraType: CONSTANTS.cameraType.back,
+            cameraType: CONSTANTS.cameraType.front,
             counting: false,
             theme: null,
             questionnairePopupTopPosition: new Animated.Value(-60), // off-screen
