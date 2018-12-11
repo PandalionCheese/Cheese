@@ -152,6 +152,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-rotate')
     compile project(':react-native-camera')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"

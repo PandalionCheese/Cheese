@@ -7,6 +7,7 @@ import {
     BackHandler,
     CameraRoll,
     Image,
+    ImageEditor,
     Linking,
     PermissionsAndroid,
     Platform,
@@ -20,6 +21,8 @@ import CONSTANTS from "./Constants";
 import MESSAGES from "./Messages";
 import STYLES from "./App.styles"
 import PermissionsService from "./PermissionsService";
+import ImageRotate from 'react-native-image-rotate';
+
 
 export default class App extends Component {
 
@@ -221,27 +224,48 @@ export default class App extends Component {
 
     takePicture = async () => {
         if (this.cameraRef) {
-            const options = {quality: 0.8, exif: true, skipProcessing: false};
-            let data = await this.cameraRef.takePictureAsync(options);
+            const options = {quality: 0.8, exif: false, skipProcessing: true};
+            const data = await this.cameraRef.takePictureAsync(...options);
+
+            // Flash animation
             this.state.cameraOverlayOpacity.setValue(1);
             Animated.timing(
                 this.state.cameraOverlayOpacity,
                 {toValue: 0, duration: 500}
             ).start();
-            CameraRoll.saveToCameraRoll(data.uri)
+
+            // Rotate & crop
+            let imageUri = data.uri;
+            if (data.width && data.height && data.width > data.height) {
+                imageUri = await new Promise((resolve, reject) => {
+                    ImageRotate.rotateImage(data.uri, -90, resolve, reject);
+                });
+            }
+            imageUri = await new Promise((resolve, reject) => {
+                const cropData = {
+                    offset: {x: 0, y: 0},
+                    size: {width: data.height, height: data.height}
+                };
+                ImageEditor.cropImage(imageUri, cropData, resolve, reject)
+            });
+
+            // Save to Gallery
+            CameraRoll.saveToCameraRoll(imageUri)
                 .catch((e) => {
                     console.error(MESSAGES.errors.cannotSaveToGallery.title, e);
                     Alert.alert(MESSAGES.errors.cannotSaveToGallery.title, MESSAGES.errors.cannotSaveToGallery.message);
                 });
+
         }
-        Animated.timing(
-            this.state.buttonsContainerBottomPosition,
-            {toValue: 0, duration: 300}
-        ).start();
+
         this.resetGame();
     };
 
     resetGame = () => {
+        Animated.timing(
+            this.state.buttonsContainerBottomPosition,
+            {toValue: 0, duration: 300}
+        ).start();
         this.setState({
             counting: false,
             theme: null

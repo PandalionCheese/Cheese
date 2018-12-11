@@ -8,10 +8,11 @@
     "postversion": "react-native-version --never-amend && git commit -am \"Bump versions to `node -p \"require('./package.json').version\"`\""
   },
   "dependencies": {
+    "prop-types": "15.6.2",
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-camera": "1.4.1",
-    "prop-types": "15.6.2"
+    "react-native-image-rotate": "^2.1.0"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",
