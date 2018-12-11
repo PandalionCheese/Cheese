@@ -27,7 +27,7 @@ export default class Counter extends Component {
                             }
                         });
                     } else {
-                        clearInterval(this.counterInterval);
+                        this.stopCounter();
                         this.props.onCounterExpired && this.props.onCounterExpired();
                     }
                 }, 1000
@@ -35,8 +35,15 @@ export default class Counter extends Component {
         });
     }
 
+    stopCounter() {
+        this.counterInterval && clearInterval(this.counterInterval);
+        this.setState({
+            counter: -1
+        });
+    }
+
     componentWillUnmount() {
-        clearInterval(this.counterInterval);
+        this.stopCounter();
     }
 
     render() {

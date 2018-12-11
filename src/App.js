@@ -67,7 +67,7 @@ export default class App extends Component {
             });
         }
         // Find if the questionnaire popup should be displayed
-        const usageCount = await this.getUsageCount();
+        const usageCount = await this.getAndIncrementUsageCount();
         if (usageCount >= CONSTANTS.maxUsagesBeforeQuestionnairePopup) {
             Animated.timing(
                 this.state.questionnairePopupTopPosition,
@@ -105,7 +105,8 @@ export default class App extends Component {
                                source={require('../assets/icon-questionnaire.png')}
                                resizeMode={'cover'}/>
                     </TouchableOpacity>
-                    <Animated.View style={{...STYLES.questionnairePopupContainer, top: this.state.questionnairePopupTopPosition}}>
+                    <Animated.View
+                        style={{...STYLES.questionnairePopupContainer, top: this.state.questionnairePopupTopPosition}}>
                         <Text style={STYLES.questionnairePopupText}>{"Votre avis pour affiner Cheese! 😀"}</Text>
                         <Image style={STYLES.questionnairePopupArrow}
                                source={require('../assets/arrow.png')}
@@ -117,31 +118,34 @@ export default class App extends Component {
                 <View style={{...STYLES.bottomContainer, height: screenHeight - screenWidth - CONSTANTS.ui.topAreaHeight}}>
                     <View style={STYLES.counterContainer}>
                         <Counter
-                            ref={ref => {
-                                this.counterRef = ref;
-                            }}
+                            ref={ref => {this.counterRef = ref;}}
                             initialValue={3}
                             onCounterExpired={this.takePicture}/>
                     </View>
                     <View style={STYLES.buttonsContainer}>
-                        {!this.state.counting &&
-                        <TouchableOpacity onPress={this.openGallery} disabled={this.state.counting}>
-                            <Image style={STYLES.openGalleryButtonIcon}
-                                   source={require('../assets/icon-gallery.png')}
-                                   resizeMode={'cover'}/>
-                        </TouchableOpacity>
-                        }
-                        <TouchableOpacity onPress={this.startGame} disabled={this.state.counting}>
-                            <Image style={STYLES.captureButtonIcon}
-                                   source={require('../assets/icon-take-picture.png')}
-                                   resizeMode={'cover'}/>
-                        </TouchableOpacity>
-                        {!this.state.counting &&
-                        <TouchableOpacity onPress={this.changeCameraType} disabled={this.state.counting}>
-                            <Image style={STYLES.changeCameraTypeButtonIcon}
-                                   source={require('../assets/icon-rotate-camera.png')}
-                                   resizeMode={'cover'}/>
-                        </TouchableOpacity>
+                        {!this.state.counting && <>
+                            <TouchableOpacity onPress={this.openGallery} disabled={this.state.counting}>
+                                <Image style={STYLES.openGalleryButtonIcon}
+                                       source={require('../assets/icon-gallery.png')}
+                                       resizeMode={'cover'}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.startGame} disabled={this.state.counting}>
+                                <Image style={STYLES.captureButtonIcon}
+                                       source={require('../assets/icon-take-picture.png')}
+                                       resizeMode={'cover'}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.changeCameraType} disabled={this.state.counting}>
+                                <Image style={STYLES.changeCameraTypeButtonIcon}
+                                       source={require('../assets/icon-rotate-camera.png')}
+                                       resizeMode={'cover'}/>
+                            </TouchableOpacity>
+                        </>}
+                        {this.state.counting &&
+                            <TouchableOpacity onPress={this.restartGame}>
+                                <Image style={STYLES.captureButtonIcon}
+                                       source={require('../assets/icon-fast-forward.png')}
+                                       resizeMode={'cover'}/>
+                            </TouchableOpacity>
                         }
                     </View>
                 </View>
@@ -152,7 +156,7 @@ export default class App extends Component {
 
     // ==================== Usage counter management ====================
 
-    getUsageCount = async () => {
+    getAndIncrementUsageCount = async () => {
         let usageCount = 0;
         try {
             usageCount = await AsyncStorage.getItem(CONSTANTS.usageCounterKey);
@@ -207,6 +211,11 @@ export default class App extends Component {
         this.counterRef.startCounter();
     };
 
+    restartGame = () => {
+        this.resetGame();
+        this.startGame();
+    }
+
     openBrowser = () => {
         Linking.canOpenURL(CONSTANTS.questionnaireUrl).then(supported => {
             if (supported) {
@@ -221,19 +230,23 @@ export default class App extends Component {
 
     takePicture = async () => {
         if (this.cameraRef) {
+
+            // Take a picture
             const options = {quality: 0.8, exif: false, skipProcessing: true};
             const data = await this.cameraRef.takePictureAsync(...options);
 
-            // Flash animation
+            // Flash overlay animation
             this.state.cameraOverlayOpacity.setValue(1);
             Animated.timing(
                 this.state.cameraOverlayOpacity,
                 {toValue: 0, duration: 500}
             ).start();
 
-            // Rotate & crop
+            // Rotate & crop picture
             let imageUri = data.uri;
             if (data.width && data.height && data.width > data.height) {
+                // Images seem to be rotated differently depending on the camera (front/back)
+                // This may work differently on iOS and/or other Android devices
                 const angle = this.state.cameraType === CONSTANTS.cameraType.front ? 270 : 90;
                 imageUri = await new Promise((resolve, reject) => {
                     ImageRotate.rotateImage(data.uri, angle, resolve, reject);
@@ -247,7 +260,7 @@ export default class App extends Component {
                 ImageEditor.cropImage(imageUri, cropData, resolve, reject)
             });
 
-            // Save to Gallery
+            // Save picture to Gallery
             CameraRoll.saveToCameraRoll(imageUri)
                 .catch((e) => {
                     console.error(MESSAGES.errors.cannotSaveToGallery.title, e);
@@ -259,6 +272,7 @@ export default class App extends Component {
     };
 
     resetGame = () => {
+        this.counterRef.stopCounter();
         this.setState({
             counting: false,
             theme: null
