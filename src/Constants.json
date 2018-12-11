@@ -1,8 +1,12 @@
 {
   "usageCounterKey": "CHEESE-COUNTER",
-  "maxUsagesBeforeQuestionnairePopup": 5,
+  "maxUsagesBeforeQuestionnairePopup": 1,
   "questionnaireUrl": "https://cheeseapp.typeform.com/to/Ff9N4U",
   "themes": [
+    "Un requin sous les pieds",
+    "Test"
+  ],
+  "themes1": [
     "3.2.1 sauter !",
     "Agent Secret",
     "Attaque d'oiseaux",
@@ -88,7 +92,6 @@
     "Rodéo",
     "Star Wars",
     "😋",
-    "😬",
     "😍",
     "😜",
     "😁",
@@ -111,5 +114,8 @@
   "cameraType": {
     "front": "front",
     "back": "back"
+  },
+  "ui": {
+    "topAreaHeight": 120
   }
 }

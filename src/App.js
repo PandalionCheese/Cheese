@@ -6,6 +6,7 @@ import {
     AsyncStorage,
     BackHandler,
     CameraRoll,
+    Dimensions,
     Image,
     ImageEditor,
     Linking,
@@ -39,7 +40,6 @@ export default class App extends Component {
             counting: false,
             theme: null,
             questionnairePopupTopPosition: new Animated.Value(-60), // off-screen
-            buttonsContainerBottomPosition: new Animated.Value(0),
             cameraOverlayOpacity: new Animated.Value(0),
         };
     }
@@ -78,72 +78,73 @@ export default class App extends Component {
     }
 
     render() {
+        const {height: screenHeight, width: screenWidth} = Dimensions.get('window');
         return (
             <View style={STYLES.container}>
 
-                {/* ========== Background camera ========== */}
+                {/* ========== Background camera & flash fx overlay========== */}
                 {this.state.cameraPermission &&
                 <RNCamera
-                    ref={ref => {
-                        this.cameraRef = ref;
-                    }}
+                    ref={ref => {this.cameraRef = ref;}}
                     style={STYLES.camera}
                     type={this.state.cameraType}
                     flashMode={RNCamera.Constants.FlashMode.auto}
                     autoFocus={true}/>
                 }
-                {/* Overlay for the "flash" effect feedback when a photo is taken */}
                 <Animated.View style={{...STYLES.cameraOverlay, opacity: this.state.cameraOverlayOpacity}}/>
 
-                {/* ========== "Open questionnaire in browser" button & Message========== */}
-                <TouchableOpacity onPress={this.openBrowser} style={STYLES.openBrowserButton}>
-                    <Image style={STYLES.openBrowserButtonIcon}
-                           source={require('../assets/icon-questionnaire.png')}
-                           resizeMode={'cover'}/>
-                </TouchableOpacity>
-                <Animated.View
-                    style={{...STYLES.questionnairePopupContainer, top: this.state.questionnairePopupTopPosition}}>
-                    <Text style={STYLES.questionnairePopupText}>{"Votre avis pour affiner Cheese! 😀"}</Text>
-                    <Image style={STYLES.questionnairePopupArrow}
-                           source={require('../assets/arrow.png')}
-                           resizeMode={'cover'}/>
-                </Animated.View>
-
-                {/* ========== Theme ========== */}
-                <View style={STYLES.themeContainer}>
-                    {this.state.theme &&
-                    <Text style={STYLES.themeText}>{this.state.theme}</Text>
-                    }
+                {/* ========== Top area : Theme ========== */}
+                <View style={{...STYLES.topContainer, height: CONSTANTS.ui.topAreaHeight}}>
+                    <Text style={STYLES.themeText}>{this.state.theme || ''}</Text>
                 </View>
 
-                {/* ========== Counter ========== */}
-                <View style={STYLES.counterContainer}>
-                    <Counter
-                        ref={ref => {
-                            this.counterRef = ref;
-                        }}
-                        initialValue={3}
-                        onCounterExpired={this.takePicture}/>
-                </View>
+                {/* ========== Questionnaire button & message overlay ========== */}
+                {!this.state.counting && <>
+                    <TouchableOpacity onPress={this.openBrowser} style={STYLES.openBrowserButton}>
+                        <Image style={STYLES.openBrowserButtonIcon}
+                               source={require('../assets/icon-questionnaire.png')}
+                               resizeMode={'cover'}/>
+                    </TouchableOpacity>
+                    <Animated.View style={{...STYLES.questionnairePopupContainer, top: this.state.questionnairePopupTopPosition}}>
+                        <Text style={STYLES.questionnairePopupText}>{"Votre avis pour affiner Cheese! 😀"}</Text>
+                        <Image style={STYLES.questionnairePopupArrow}
+                               source={require('../assets/arrow.png')}
+                               resizeMode={'cover'}/>
+                    </Animated.View>
+                </>}
 
-                {/* ========== Action buttons at the bottom ========== */}
-                <Animated.View style={{...STYLES.buttonsContainer, bottom: this.state.buttonsContainerBottomPosition}}>
-                    <TouchableOpacity onPress={this.openGallery} disabled={this.state.counting}>
-                        <Image style={STYLES.openGalleryButtonIcon}
-                               source={require('../assets/icon-gallery.png')}
-                               resizeMode={'cover'}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.startGame} disabled={this.state.counting}>
-                        <Image style={STYLES.captureButtonIcon}
-                               source={require('../assets/icon-take-picture.png')}
-                               resizeMode={'cover'}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.changeCameraType} disabled={this.state.counting}>
-                        <Image style={STYLES.changeCameraTypeButtonIcon}
-                               source={require('../assets/icon-rotate-camera.png')}
-                               resizeMode={'cover'}/>
-                    </TouchableOpacity>
-                </Animated.View>
+                {/* ========== Bottom area : Counter & Buttons ========== */}
+                <View style={{...STYLES.bottomContainer, height: screenHeight - screenWidth - CONSTANTS.ui.topAreaHeight}}>
+                    <View style={STYLES.counterContainer}>
+                        <Counter
+                            ref={ref => {
+                                this.counterRef = ref;
+                            }}
+                            initialValue={3}
+                            onCounterExpired={this.takePicture}/>
+                    </View>
+                    <View style={STYLES.buttonsContainer}>
+                        {!this.state.counting &&
+                        <TouchableOpacity onPress={this.openGallery} disabled={this.state.counting}>
+                            <Image style={STYLES.openGalleryButtonIcon}
+                                   source={require('../assets/icon-gallery.png')}
+                                   resizeMode={'cover'}/>
+                        </TouchableOpacity>
+                        }
+                        <TouchableOpacity onPress={this.startGame} disabled={this.state.counting}>
+                            <Image style={STYLES.captureButtonIcon}
+                                   source={require('../assets/icon-take-picture.png')}
+                                   resizeMode={'cover'}/>
+                        </TouchableOpacity>
+                        {!this.state.counting &&
+                        <TouchableOpacity onPress={this.changeCameraType} disabled={this.state.counting}>
+                            <Image style={STYLES.changeCameraTypeButtonIcon}
+                                   source={require('../assets/icon-rotate-camera.png')}
+                                   resizeMode={'cover'}/>
+                        </TouchableOpacity>
+                        }
+                    </View>
+                </View>
 
             </View>
         );
@@ -198,10 +199,6 @@ export default class App extends Component {
     };
 
     startGame = () => {
-        Animated.timing(
-            this.state.buttonsContainerBottomPosition,
-            {toValue: -100, duration: 200,}
-        ).start();
         let randomTheme = CONSTANTS.themes[Math.floor(Math.random() * CONSTANTS.themes.length)];
         this.setState({
             counting: true,
@@ -237,13 +234,14 @@ export default class App extends Component {
             // Rotate & crop
             let imageUri = data.uri;
             if (data.width && data.height && data.width > data.height) {
+                const angle = this.state.cameraType === CONSTANTS.cameraType.front ? 270 : 90;
                 imageUri = await new Promise((resolve, reject) => {
-                    ImageRotate.rotateImage(data.uri, -90, resolve, reject);
+                    ImageRotate.rotateImage(data.uri, angle, resolve, reject);
                 });
             }
             imageUri = await new Promise((resolve, reject) => {
                 const cropData = {
-                    offset: {x: 0, y: 0},
+                    offset: {x: 0, y: CONSTANTS.ui.topAreaHeight},
                     size: {width: data.height, height: data.height}
                 };
                 ImageEditor.cropImage(imageUri, cropData, resolve, reject)
@@ -255,17 +253,12 @@ export default class App extends Component {
                     console.error(MESSAGES.errors.cannotSaveToGallery.title, e);
                     Alert.alert(MESSAGES.errors.cannotSaveToGallery.title, MESSAGES.errors.cannotSaveToGallery.message);
                 });
-
         }
 
         this.resetGame();
     };
 
     resetGame = () => {
-        Animated.timing(
-            this.state.buttonsContainerBottomPosition,
-            {toValue: 0, duration: 300}
-        ).start();
         this.setState({
             counting: false,
             theme: null

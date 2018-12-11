@@ -42,9 +42,7 @@ export default class Counter extends Component {
     render() {
         return (
             <View style={STYLES.container}>
-                {this.state.counter > 0 &&
-                <Text style={STYLES.counterText}>{this.state.counter === 0 ? 'Cheese !' : this.state.counter}</Text>
-                }
+                <Text style={STYLES.counterText}>{this.state.counter <= 0 ? '' : this.state.counter}</Text>
             </View>
         );
     }
